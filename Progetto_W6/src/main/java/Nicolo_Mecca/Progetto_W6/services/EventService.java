@@ -4,6 +4,7 @@ import Nicolo_Mecca.Progetto_W6.entities.Event;
 import Nicolo_Mecca.Progetto_W6.entities.User;
 import Nicolo_Mecca.Progetto_W6.excepetions.BadRequestException;
 import Nicolo_Mecca.Progetto_W6.excepetions.NotFoundException;
+import Nicolo_Mecca.Progetto_W6.excepetions.UnauthorizedException;
 import Nicolo_Mecca.Progetto_W6.payloads.EventDTO;
 import Nicolo_Mecca.Progetto_W6.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ public class EventService {
 
     public Event updateEvent(Long eventId, EventDTO eventDTO, User organizer) {
         Event event = getEventById(eventId);
+
+        if (!event.getOrganizer().getId().equals(organizer.getId())) {
+            throw new UnauthorizedException("Non sei autorizzato a modificare questo evento");
+        }
+
         event.setTitle(eventDTO.title());
         event.setDescription(eventDTO.description());
         event.setDate(eventDTO.date());
