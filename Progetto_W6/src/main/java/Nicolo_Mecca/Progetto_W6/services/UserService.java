@@ -45,6 +45,8 @@ public class UserService {
             throw new BadRequestException("Email " + body.email() + " già in uso");
         });
         User newUser = new User();
+        newUser.setName(body.name());
+        newUser.setSurname(body.surname());
         newUser.setEmail(body.email());
         newUser.setPassword(bcrypt.encode(body.password()));
         newUser.setRole(body.role());
@@ -71,6 +73,9 @@ public class UserService {
             userRepository.findByEmail(body.email()).ifPresent(user -> {
                 throw new BadRequestException("Email " + body.email() + " già in uso!");
             });
+
+            found.setName(body.name());
+            found.setSurname(body.surname());
             found.setEmail(body.email());
         }
 

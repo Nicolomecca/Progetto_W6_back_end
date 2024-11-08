@@ -7,6 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UserDTO(
+        @NotEmpty(message = "Il nome è obbligatorio")
+        String name,
+        @NotEmpty(message = "Il cognome è obbligatorio")
+        String surname,
         @NotEmpty(message = "l'email è un campo obbligatorio!")
         @Email(message = "L'email inserita non è valida")
         String email,

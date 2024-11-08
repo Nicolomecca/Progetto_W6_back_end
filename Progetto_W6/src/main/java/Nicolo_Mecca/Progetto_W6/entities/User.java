@@ -16,12 +16,14 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Table(name = "users")
-@JsonIgnoreProperties({"password", "role", "accountNonLocked", "credentialsNonExpired", "accountNonExpired", "authorities", "enabled", "username"})
+@JsonIgnoreProperties({"password", "role", "accountNonLocked", "credentialsNonExpired", "accountNonExpired", "authorities", "enabled"})
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
+    private String name;
+    private String surname;
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
@@ -30,7 +32,9 @@ public class User implements UserDetails {
     private UserRole role;
 
 
-    public User(String email, String password, UserRole role) {
+    public User(String name, String surname, String email, String password, UserRole role) {
+        this.name = name;
+        this.surname = surname;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -43,6 +47,6 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email;
+        return this.name;
     }
 }

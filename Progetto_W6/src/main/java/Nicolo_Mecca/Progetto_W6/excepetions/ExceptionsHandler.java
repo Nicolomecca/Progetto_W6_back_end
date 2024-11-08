@@ -2,6 +2,7 @@ package Nicolo_Mecca.Progetto_W6.excepetions;
 
 import Nicolo_Mecca.Progetto_W6.payloads.ErrorsResponseDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +22,12 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
     public ErrorsResponseDTO handleUnauthorized(UnauthorizedException ex) {
         return new ErrorsResponseDTO(ex.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // 403
+    public ErrorsResponseDTO handleForbidden(AuthorizationDeniedException ex) {
+        return new ErrorsResponseDTO("Non hai i permessi per accedere", LocalDateTime.now());
     }
 
     @ExceptionHandler(NotFoundException.class)
