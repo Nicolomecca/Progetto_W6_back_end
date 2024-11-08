@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,18 +33,34 @@ public class UserService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Autowired
+    private PasswordEncoder bcrypt;
+
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User con id " + id + "non trovato "));
     }
 
     public User save(UserDTO body) {
         userRepository.findByEmail(body.email()).ifPresent(user -> {
-            throw new BadRequestException("Email " + body.email() + " already in use!");
+            throw new BadRequestException("Email " + body.email() + " già in uso");
         });
         User newUser = new User();
         newUser.setEmail(body.email());
-        newUser.setPassword();
+        newUser.setPassword(bcrypt.encode(body.password()));
         newUser.setRole(body.role());
+
+        return userRepository.save(newUser);
+    }
+
+    public User saveOrganizer(UserDTO body) {
+        userRepository.findByEmail(body.email()).ifPresent(user -> {
+            throw new BadRequestException("Email " + body.email() + " già in uso");
+        });
+
+        User newUser = new User();
+        newUser.setEmail(body.email());
+        newUser.setPassword(bcrypt.encode(body.password()));
+        newUser.setRole(UserRole.EVENT_ORGANIZER);
 
         return userRepository.save(newUser);
     }
@@ -56,7 +73,7 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User with email " + email + " not found"));
+                .orElseThrow(() -> new NotFoundException("User con email " + email + " not trovata"));
     }
 
     public User findByIdAndUpdate(Long userId, UserDTO body) {
@@ -64,13 +81,13 @@ public class UserService {
 
         if (!found.getEmail().equals(body.email())) {
             userRepository.findByEmail(body.email()).ifPresent(user -> {
-                throw new BadRequestException("Email " + body.email() + " already in use!");
+                throw new BadRequestException("Email " + body.email() + " già in uso!");
             });
             found.setEmail(body.email());
         }
 
         if (body.password() != null) {
-            found.setPassword();
+            found.setPassword(bcrypt.encode(body.password()));
         }
 
         return userRepository.save(found);
@@ -79,7 +96,7 @@ public class UserService {
     public List<Event> getUserEvents(Long userId) {
         User user = this.findById(userId);
         if (user.getRole() != UserRole.EVENT_ORGANIZER) {
-            throw new UnauthorizedException("User is not an organizer");
+            throw new UnauthorizedException("User non è u organizzatore");
         }
         return eventRepository.findByOrganizer(user);
     }
