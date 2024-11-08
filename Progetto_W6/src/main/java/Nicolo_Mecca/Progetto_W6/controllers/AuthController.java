@@ -2,7 +2,6 @@ package Nicolo_Mecca.Progetto_W6.controllers;
 
 
 import Nicolo_Mecca.Progetto_W6.entities.User;
-import Nicolo_Mecca.Progetto_W6.entities.UserRole;
 import Nicolo_Mecca.Progetto_W6.excepetions.BadRequestException;
 import Nicolo_Mecca.Progetto_W6.payloads.UserDTO;
 import Nicolo_Mecca.Progetto_W6.payloads.UserLoginDTO;
@@ -27,7 +26,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public UserLoginResponseDTO login(@RequestBody UserLoginDTO body) {
+    public UserLoginResponseDTO login(@RequestBody @Validated UserLoginDTO body) {
         return new UserLoginResponseDTO(authService.authenticateUser(body));
     }
 
@@ -41,23 +40,7 @@ public class AuthController {
             throw new BadRequestException("Errori nel payload: " + message);
         }
 
-        // Imposto di default il ruolo NORMAL_USER
-        body = new UserDTO(body.email(), body.password(), UserRole.NORMAL_USER);
-        return userService.save(body);
-    }
-
-    @PostMapping("/register/organizer")
-    @ResponseStatus(HttpStatus.CREATED)
-    public User registerOrganizer(@RequestBody @Validated UserDTO body, BindingResult validationResult) {
-        if (validationResult.hasErrors()) {
-            String message = validationResult.getAllErrors().stream()
-                    .map(error -> error.getDefaultMessage())
-                    .collect(Collectors.joining(". "));
-            throw new BadRequestException("Errori nel payload: " + message);
-        }
-
-        // Imposto il ruolo EVENT_ORGANIZER
-        body = new UserDTO(body.email(), body.password(), UserRole.EVENT_ORGANIZER);
+        // Il ruolo viene specificato direttamente nel payload UserDTO
         return userService.save(body);
     }
 }

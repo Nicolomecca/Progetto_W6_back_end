@@ -52,18 +52,6 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    public User saveOrganizer(UserDTO body) {
-        userRepository.findByEmail(body.email()).ifPresent(user -> {
-            throw new BadRequestException("Email " + body.email() + " già in uso");
-        });
-
-        User newUser = new User();
-        newUser.setEmail(body.email());
-        newUser.setPassword(bcrypt.encode(body.password()));
-        newUser.setRole(UserRole.EVENT_ORGANIZER);
-
-        return userRepository.save(newUser);
-    }
 
     public Page<User> findAll(int page, int size, String sortBy) {
         if (size > 100) size = 100;
