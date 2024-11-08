@@ -20,19 +20,20 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
+    @PreAuthorize("permitAll()")
     public List<Event> getAllEvents() {
         return eventService.getAllEvents();
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')") // Corretto
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
     @ResponseStatus(HttpStatus.CREATED)
     public Event createEvent(@RequestBody @Validated EventDTO eventDTO, @AuthenticationPrincipal User organizer) {
         return eventService.createEvent(eventDTO, organizer);
     }
 
     @PutMapping("/{eventId}")
-    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')") // Corretto
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
     public Event updateEvent(@PathVariable Long eventId, @RequestBody @Validated EventDTO eventDTO, @AuthenticationPrincipal User organizer) {
         return eventService.updateEvent(eventId, eventDTO, organizer);
     }
@@ -45,6 +46,7 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
+    @PreAuthorize("permitAll()")
     public Event getEventById(@PathVariable Long eventId) {
         return eventService.getEventById(eventId);
     }
