@@ -40,7 +40,6 @@ public class AuthController {
             throw new BadRequestException("Errori nel payload: " + message);
         }
 
-        // Il ruolo viene specificato direttamente nel payload UserDTO
         return userService.save(body);
     }
 }

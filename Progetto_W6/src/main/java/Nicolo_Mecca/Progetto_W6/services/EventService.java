@@ -35,7 +35,6 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    // Metodo per l'aggiornamento completo dell'evento
     public Event updateEvent(Long eventId, EventDTO eventDTO, User organizer) {
         Event event = getEventById(eventId);
         event.setTitle(eventDTO.title());
@@ -46,7 +45,6 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    // Nuovo metodo per l'aggiornamento dei posti (usato dal BookingService)
     public Event updateEvent(Long eventId, Event event) {
         Event existingEvent = getEventById(eventId);
         existingEvent.setAvailableSeats(event.getAvailableSeats());
